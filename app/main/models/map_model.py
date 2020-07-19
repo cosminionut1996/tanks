@@ -1,4 +1,6 @@
 from .. import mongo
+from .embedded import Coordinate
+
 
 class Map(mongo.Document):
 
@@ -6,6 +8,7 @@ class Map(mongo.Document):
     height = mongo.IntField(required=True, min_value=50)
     width = mongo.IntField(required=True, min_value=50)
 
-    # obstacles = mongo.ListField(
-    #     mongo.Tuple
-    # )
+    tank1_start = mongo.EmbeddedDocumentField(Coordinate)
+    tank2_start = mongo.EmbeddedDocumentField(Coordinate)
+
+    obstacles = mongo.EmbeddedDocumentListField(Coordinate)

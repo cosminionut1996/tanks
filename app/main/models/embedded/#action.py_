@@ -1,0 +1,11 @@
+from mongoengine import EmbeddedDocument, IntField, ObjectIdField
+from .coordinate import Coordinate
+
+
+class Move(EmbeddedDocument):
+
+    tank_id = ObjectIdField(required=True)
+    old_position = Coordinate(required=True)
+    new_position = Coordinate(required=True)
+    action = StringField(required=True)
+    

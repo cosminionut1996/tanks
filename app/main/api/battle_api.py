@@ -1,17 +1,14 @@
+import json
 from http import HTTPStatus
 
-# from flask import request
+from flask import request
 from flask_restx import Resource
-# from werkzeug.exceptions import BadRequest
 
-# from ..model.user import User
-# from ..service.auth_helper import get_logged_in_user
-# from ..service.group_service import (create_group, delete_group, get_a_group,
-#                                      get_groups, update_group)
-# from ..util.decorator import token_required
+from ..core.battle_core import BattleCore
 from ..util.dto import BattleDto as Dto
 
 api = Dto.api
+battle_model = Dto.battle_model
 
 
 @api.route('')
@@ -21,16 +18,35 @@ class BattleList(Resource):
         'Create a battle between two tanks. ' \
         'The result will be used for querying the result of the battle. ' \
         'The battle is ran asynchronously.')
+    @api.expect(battle_model)
+    @api.marshal_with(battle_model)
     def post(self):
-        pass
+        battle_object, status = BattleCore.create(
+            request.json.get('tank1_id'),
+            request.json.get('tank2_id'),
+            request.json.get('map_id')
+        )
+        return json.loads(battle_object), status
 
-    @api.doc('Filter and export a list of battles.')
+    @api.doc('Return all battle objects and filter them accordingly')
+    @api.marshal_with(battle_model)
     def get(self):
-        pass
+        return BattleCore.get_all()
 
-@api.route('/<uuid_battle>')
+
+@api.route('/<object_id>')
 class Battle(Resource):
 
     @api.doc('Retrieve a battle from the database.')
-    def get(self, uuid_battle):
-        pass
+    @api.response(HTTPStatus.FOUND, 'Did manage to find the requested battle')
+    @api.response(HTTPStatus.NOT_FOUND, 'Did not find a battle corresponding to the object id')
+    @api.marshal_with(battle_model)
+    def get(self, object_id):
+        battle_object, status = BattleCore.get(object_id)
+        return json.loads(battle_object), status
+    
+    @api.doc('Delete the battle object with the specified id')
+    @api.response(HTTPStatus.NOT_FOUND, 'Did not find a battle corresponding to the object id')
+    @api.response(HTTPStatus.OK, 'Did manage to find and delete the requested battle')
+    def delete(self, object_id):
+        return BattleCore.delete(object_id)

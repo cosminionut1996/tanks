@@ -19,7 +19,7 @@ class MapCore(Core):
         return super().create(
             width=width,
             height=height,
-            # tank1_start=tank1_start,
-            # tank2_start=tank2_start,
+            tank1_start=tank1_start,
+            tank2_start=tank2_start
             # obstacles=obstacles
         )

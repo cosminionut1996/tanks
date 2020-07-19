@@ -9,15 +9,25 @@ class ObjectIDField(fields.Raw):
 class TankDto:
     api = Namespace('tanks', description='Tank object related operations')
     tank_model = api.model('Tank', {
-
+        '_id': ObjectIDField(description='Tank ID'),
+        'health': fields.Integer(required=True, description='Tank health'),
+        'damage': fields.Integer(required=True, description='Tank damage')
     })
 
 class MapDto:
     api =  Namespace('maps', description='Map object related operations')
+
+    coordinate_model = api.model('Coordinate', {
+        'x': fields.Integer(required=True, description='x coordinate'),
+        'y': fields.Integer(required=True, description='y coordinate')
+    })
+
     map_model = api.model('Map', {
-        '_id': ObjectIDField(description='Object id'),
+        '_id': ObjectIDField(description='Map ID'),
         'height': fields.Integer(required=True, description='Map height'),
         'width': fields.Integer(required=True, description='Map width'),
+        'tank1_start': fields.Nested(coordinate_model, required=True, description='Starting position for the first tank'),
+        'tank2_start': fields.Nested(coordinate_model, required=True, description='Starting position for the second tank')
         # 'obstacles': fields.List(
         #     fields.List(
         #         fields.Integer(),
@@ -27,24 +37,14 @@ class MapDto:
         #     ),
         #     description='The list of obstacles'
         # ),
-        # 'start_1': fields.List(
-        #     fields.Integer(),
-        #     required=True,
-        #     # min_items=2,
-        #     # max_items=2,
-        #     description='The X and Y coordinates of the first starting position'
-        # ),
-        # 'start_2': fields.List(
-        #     fields.Integer(),
-        #     required=True,
-        #     # min_items=2,
-        #     # max_items=2,
-        #     description='The X and Y coordinates of the second starting position'
-        # ),
     })
 
 class BattleDto:
     api = Namespace('battle', description='Battle object related operations')
     battle_model = api.model('Battle', {
-
+        '_id': ObjectIDField(description='Battle ID'),
+        'tank1_id': ObjectIDField(description='Object ID of the first tank'),
+        'tank2_id': ObjectIDField(description='Object ID of the second tank'),
+        'map_id': ObjectIDField(description='Object ID of the map'),
+        # 'moves': fields.List(description='List of moves')
     })

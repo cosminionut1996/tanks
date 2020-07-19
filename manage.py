@@ -1,4 +1,5 @@
 import os
+import sys
 import unittest
 
 from flask_script import Manager
@@ -6,8 +7,9 @@ from flask_script import Manager
 from app import blueprint
 from app.main import create_app
 
+env_type = 'test' if 'test' in sys.argv else os.getenv('TANKS_ENV') or 'dev'
 
-app = create_app(os.getenv('TANKS_ENV') or 'dev')
+app = create_app(env_type)
 app.register_blueprint(blueprint)
 
 app.app_context().push()

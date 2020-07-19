@@ -18,6 +18,25 @@ class Core(ABC):
         return new_object.to_json(), HTTPStatus.CREATED
 
     @classmethod
+    def get_all(cls, **filters):
+        try:
+            found = cls.MODEL.objects(**filters)
+        except cls.MODEL.DoesNotExist:
+            return json.dumps(dict(
+                error='Could not find any object of type {}' \
+                      .format(type(cls.MODEL))
+            )), HTTPStatus.NOT_FOUND
+        except Exception as exc:
+            return json.dumps(dict(
+                error='Unexpected exception while querying: {}' \
+                      .format(exc)
+            )), HTTPStatus.INTERNAL_SERVER_ERROR
+        else:
+            return list(
+                map(lambda x: x.to_json(), found)
+            ), HTTPStatus.FOUND
+
+    @classmethod
     def get(cls, object_id, _whole_obj=False):
         try:
             found = cls.MODEL.objects.get(id=ObjectId(object_id))

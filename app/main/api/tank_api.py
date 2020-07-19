@@ -1,14 +1,10 @@
+import json
 from http import HTTPStatus
 
-# from flask import request
+from flask import request
 from flask_restx import Resource
-# from werkzeug.exceptions import BadRequest
 
-# from ..model.user import User
-# from ..service.auth_helper import get_logged_in_user
-# from ..service.group_service import (create_group, delete_group, get_a_group,
-#                                      get_groups, update_group)
-# from ..util.decorator import token_required
+from ..core.tank_core import TankCore
 from ..util.dto import TankDto as Dto
 
 api = Dto.api
@@ -18,20 +14,31 @@ tank_model = Dto.tank_model
 class TankList(Resource):
 
     @api.doc('Create a tank and save it into the database')
+    @api.expect(tank_model)
     @api.marshal_with(tank_model)
     def post(self):
-        pass
+        tank_object, status = TankCore.create(
+            request.json.get('health'),
+            request.json.get('damage')
+        )
+        return json.loads(tank_object), status
+
+    @api.doc('Return all tank objects and filter them accordingly')
+    # @api.marshal_list_with(tank_model)
+    def get(self):
+        return TankCore.get_all()
 
 
-@api.route('/<uuid_tank>')
+@api.route('/<object_id>')
 class Tank(Resource):
 
     @api.doc('Retrieve a tank from the database')
     @api.expect(tank_model)
     @api.marshal_with(tank_model)
-    def get(self, uuid_tank):
-        pass
+    def get(self, object_id):
+        tank_object, status = TankCore.get(object_id)
+        return json.loads(tank_object), status
 
     @api.doc('Delete a tank')
-    def delete(self, uuid_tank):
-        pass
+    def delete(self, object_id):
+        return TankCore.delete(object_id)

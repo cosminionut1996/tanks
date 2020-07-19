@@ -20,15 +20,17 @@ class MapList(Resource):
         map_object, status = MapCore.create(
             request.json.get('height'),
             request.json.get('width'),
-            [],
-            [],
+            request.json.get('tank1_start'),
+            request.json.get('tank2_start'),
             []
         )
         return json.loads(map_object), status
 
-    # @api.doc('Filter and return a list of maps')
-    # def get(self):
-    #     pass
+    @api.doc('Return all map objects and filter them accordingly')
+    @api.marshal_with(map_model)
+    def get(self):
+        return MapCore.get_all()
+
 
 @api.route('/<object_id>')
 class Map(Resource):
@@ -45,5 +47,4 @@ class Map(Resource):
     @api.response(HTTPStatus.NOT_FOUND, 'Did not find a map corresponding to the object id')
     @api.response(HTTPStatus.OK, 'Did manage to find and delete the requested map')
     def delete(self, object_id):
-        _, status = MapCore.delete(object_id)
-        return _, status
+        return MapCore.delete(object_id)

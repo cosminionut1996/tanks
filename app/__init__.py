@@ -18,4 +18,4 @@ api = Api(
 
 api.add_namespace(tank_ns, path='/tanks')
 api.add_namespace(map_ns, path='/maps')
-api.add_namespace(battle_ns, path='/battle')
+api.add_namespace(battle_ns, path='/battles')
